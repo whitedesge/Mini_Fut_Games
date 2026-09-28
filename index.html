@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Fut Games – Hub de Mini-Jogos de Futebol</title>
+  <meta name="description" content="Hub de mini-jogos de futebol no navegador: Leilão FC, Nacionalidade FC e mais. Estilo EA FC, 100% gratuito." />
+  <meta name="keywords" content="mini jogos futebol, leilão fc, nacionalidade fc, brasileirão, ea fc, jogos browser" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Mini Fut Games" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Mini Fut Games – Hub de Mini-Jogos de Futebol" />
+  <meta property="og:description" content="Leilão de jogadores, desafio de nacionalidades e mais mini-jogos de futebol no navegador." />
+  <meta property="og:locale" content="pt_BR" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon" aria-hidden="true">⚽</span>
+      <div>
+        <h1>Mini Fut Games</h1>
+        <p class="tagline">Hub de mini-jogos de futebol</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#jogos">Jogos</a>
+      <a href="#sobre">Sobre</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <h2 class="hero-title">Escolha seu desafio</h2>
+      <p class="hero-sub">
+        Mini-jogos de futebol no navegador, no estilo EA FC.
+        Sem download, sem cadastro — só jogar.
+      </p>
+    </section>
+
+    <!-- Games grid -->
+    <section id="jogos" class="games-section">
+      <div class="section-head">
+        <h3>Jogos disponíveis</h3>
+        <span class="count" id="games-count">2 jogos</span>
+      </div>
+
+      <div class="games-grid" id="games-grid">
+        <!-- Cards injetados via JS a partir do catálogo -->
+      </div>
+    </section>
+
+    <!-- Sobre -->
+    <section id="sobre" class="about-section">
+      <h3>Sobre o hub</h3>
+      <p>
+        O <strong>Mini Fut Games</strong> reúne mini-jogos de futebol feitos para o navegador.
+        Cada jogo é independente e pode ser aberto em uma nova aba.
+        Novos títulos podem ser adicionados ao catálogo.
+      </p>
+      <ul class="about-list">
+        <li>100% estático — GitHub Pages</li>
+        <li>Mobile e desktop</li>
+        <li>Sem backend e sem login</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Mini Fut Games · Feito para fãs de futebol e Ultimate Team</p>
+  </footer>
+
+  <script src="js/catalog.js"></script>
+  <script src="js/hub.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nacionalidade FC 2026 – Monte seu 4-3-3</title>
+  <meta name="description" content="Monte um time 1-4-3-3 com jogadores do Brasileirão 2026. As nacionalidades podem se repetir." />
+  <meta name="robots" content="index, follow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#070b14', 800: '#0f172a', 700: '#111827', 600: '#1e293b' },
+            accent: { DEFAULT: '#22c55e', dim: '#16a34a' },
+            gold: { DEFAULT: '#fbbf24', dim: '#f59e0b' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: radial-gradient(ellipse at top, #0f172a 0%, #070b14 65%); min-height: 100vh; }
+    .pitch {
+      background: linear-gradient(180deg, #14532d 0%, #166534 40%, #15803d 100%);
+      border: 3px solid #22c55e33;
+      box-shadow: inset 0 0 60px rgba(0,0,0,.4), 0 10px 40px rgba(0,0,0,.5);
+      position: relative;
+    }
+    .pitch::before {
+      content: '';
+      position: absolute;
+      inset: 8%;
+      border: 2px solid rgba(255,255,255,.15);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .pitch::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      transform: translate(-50%,-50%);
+      border: 2px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .slot {
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.45);
+      border: 2px dashed rgba(255,255,255,.3);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .2s;
+      font-size: 0.65rem;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .slot:hover:not(.filled):not(.disabled) {
+      border-color: #22c55e;
+      background: rgba(34,197,94,.2);
+      transform: scale(1.06);
+    }
+    .slot.filled {
+      border-style: solid;
+      background: rgba(0,0,0,.7);
+      cursor: default;
+    }
+    .slot.selectable {
+      border-color: #fbbf24;
+      box-shadow: 0 0 12px rgba(251,191,36,.4);
+      animation: pulse-gold 1.2s infinite;
+    }
+    .slot.disabled { opacity: .4; cursor: not-allowed; }
+    @keyframes pulse-gold {
+      0%,100% { box-shadow: 0 0 8px rgba(251,191,36,.3); }
+      50% { box-shadow: 0 0 18px rgba(251,191,36,.6); }
+    }
+    .formation {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px 12px;
+      min-height: 420px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .formation-zone {
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      background: rgba(0,0,0,.12);
+      padding: 6px 8px 8px;
+      transition: background .2s, border-color .2s;
+    }
+    .formation-zone.complete {
+      border-color: rgba(34,197,94,.5);
+      background: rgba(0,0,0,.28);
+    }
+    .formation-zone-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 20px;
+      margin-bottom: 4px;
+      color: rgba(255,255,255,.8);
+      font-size: .65rem;
+    }
+    .formation-zone-title { font-weight: 800; text-transform: uppercase; }
+    .formation-zone-count { color: rgba(255,255,255,.65); }
+    .formation-zone.complete .formation-zone-count { color: #86efac; }
+    .formation-slots {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      justify-items: center;
+      align-items: center;
+      gap: 4px;
+    }
+    .zone-attack .formation-slots,
+    .zone-midfield .formation-slots {
+      grid-template-rows: minmax(56px, auto);
+    }
+    .zone-defense .formation-slots {
+      grid-template-rows: repeat(2, minmax(56px, auto));
+    }
+    .slot {
+      width: min(72px, 100%);
+      height: auto;
+      aspect-ratio: 1;
+      min-width: 0;
+    }
+    /* 1-4-3-3 positions within each area */
+    .zone-attack .pos-lw { grid-column: 1; grid-row: 1; }
+    .zone-attack .pos-st { grid-column: 3; grid-row: 1; }
+    .zone-attack .pos-rw { grid-column: 5; grid-row: 1; }
+    .zone-midfield .pos-cm1 { grid-column: 2; grid-row: 1; }
+    .zone-midfield .pos-cm2 { grid-column: 3; grid-row: 1; }
+    .zone-midfield .pos-cm3 { grid-column: 4; grid-row: 1; }
+    .zone-defense .pos-lb { grid-column: 1; grid-row: 1; }
+    .zone-defense .pos-cb1 { grid-column: 2; grid-row: 1; }
+    .zone-defense .pos-cb2 { grid-column: 4; grid-row: 1; }
+    .zone-defense .pos-rb { grid-column: 5; grid-row: 1; }
+    .zone-defense .pos-gk { grid-column: 3; grid-row: 2; }
+
+    .modal-bg {
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(6px);
+    }
+    .card-glow {
+      box-shadow: 0 0 30px rgba(34,197,94,.15);
+    }
+    .flag { font-size: 1.3rem; line-height: 1; }
+    input:focus, select:focus { outline: none; box-shadow: 0 0 0 2px #22c55e; }
+  </style>
+</head>
+<body class="text-slate-100 font-sans antialiased">
+
+  <!-- Header -->
+  <header class="border-b-2 border-accent bg-dark-800/90 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🌍</span>
+        <h1 class="text-xl font-extrabold bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent">Nacionalidade FC</h1>
+      </div>
+      <div id="badge" class="text-xs font-semibold px-3 py-1 rounded-full border border-dark-600 bg-dark-700 text-accent">Menu</div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 pt-6 pb-20">
+
+    <!-- ===== MENU ===== -->
+    <section id="screen-menu" class="text-center py-12">
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-3 bg-gradient-to-r from-white to-accent bg-clip-text text-transparent">
+        Monte o 4-3-3 em 2026
+      </h2>
+      <p class="text-slate-400 mb-8 max-w-lg mx-auto">
+        A cada rodada um clube do Brasileirão de 2026 é sorteado.
+        Escolha um jogador que atuou nesse clube na temporada e posicione-o.
+        <strong class="text-accent">Não repita nacionalidades.</strong>
+      </p>
+      <div class="bg-dark-700 border border-dark-600 rounded-2xl p-6 max-w-md mx-auto mb-8 text-left text-sm text-slate-300 space-y-2">
+        <p>⚽ Formação: <strong class="text-white">1-4-3-3</strong> (11 jogadores)</p>
+        <p>🇧🇷 Temporada: Brasileirão Série A 2026</p>
+        <p>🚫 Regra: cada nacionalidade só pode aparecer uma vez</p>
+        <p>🏆 Preencha as 11 posições para vencer</p>
+      </div>
+      <button id="btn-start" class="bg-gradient-to-r from-accent to-accent-dim text-black font-bold px-8 py-3 rounded-xl text-lg hover:scale-105 transition shadow-lg shadow-accent/30">
+        ⚽ Iniciar Jogo
+      </button>
+    </section>
+
+    <!-- ===== GAME ===== -->
+    <section id="screen-game" class="hidden">
+      <div class="grid lg:grid-cols-[1fr_280px] gap-6">
+
+        <!-- Left: Pitch + Draw -->
+        <div class="space-y-5">
+          <!-- Draw Card -->
+          <div id="draw-card" class="bg-dark-700 border border-dark-600 rounded-2xl p-5 card-glow text-center">
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Rodada atual</p>
+            <div class="flex items-center justify-center gap-4 flex-wrap">
+              <div>
+                <p class="text-xs text-slate-500">Clube</p>
+                <p id="draw-club" class="text-xl font-bold text-accent">—</p>
+              </div>
+              <div class="text-3xl text-slate-600">×</div>
+              <div>
+                <p class="text-xs text-slate-500">Ano</p>
+                <p id="draw-year" class="text-xl font-bold text-gold">—</p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">Escolha um jogador deste clube na temporada 2026</p>
+          </div>
+
+          <!-- Player Input -->
+          <div id="input-panel" class="bg-dark-700 border border-dark-600 rounded-2xl p-4 space-y-3">
+            <label for="player-input" class="block text-sm font-semibold text-white">Escolha um jogador</label>
+            <div class="flex gap-2 flex-wrap">
+              <input id="player-input" type="text" placeholder="Buscar por nome ou país..."
+                class="flex-1 min-w-[180px] bg-dark-900 border border-dark-600 rounded-lg px-3 py-2 text-sm" />
+              <button id="btn-confirm-player" class="bg-accent text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-accent-dim transition">
+                Confirmar
+              </button>
+            </div>
+            <div class="flex items-center justify-between gap-3 text-xs text-slate-400">
+              <span>Jogadores com país já usado ficam bloqueados</span>
+              <span id="player-count" class="shrink-0 font-semibold text-accent" aria-live="polite"></span>
+            </div>
+            <div id="player-list" class="max-h-64 overflow-y-auto divide-y divide-dark-600 rounded-lg border border-dark-600" role="listbox" aria-label="Jogadores disponíveis"></div>
+          </div>
+
+          <!-- Pitch -->
+          <div class="pitch rounded-2xl">
+            <div class="formation" id="formation">
+              <!-- slots injected by JS -->
+            </div>
+          </div>
+          <p class="text-center text-xs text-slate-500">Clique em uma posição vazia após confirmar o jogador</p>
+        </div>
+
+        <!-- Right: Nations + Progress -->
+        <aside class="space-y-4">
+          <div class="bg-dark-700 border border-dark-600 rounded-2xl p-4">
+            <h3 class="text-sm font-bold text-accent mb-2">📊 Progresso</h3>
+            <div class="flex items-center gap-2 mb-1">
+              <div class="flex-1 h-2 bg-dark-900 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-accent to-gold transition-all duration-500" style="width:0%"></div>
+              </div>
+              <span id="progress-text" class="text-sm font-bold text-gold">0/11</span>
+            </div>
+          </div>
+
+          <div class="bg-dark-700 border border-dark-600 rounded-2xl p-4">
+            <h3 class="text-sm font-bold text-accent mb-3">🏳️ Nacionalidades Usadas</h3>
+            <div id="nations-list" class="flex flex-wrap gap-2 min-h-[60px]">
+              <span class="text-xs text-slate-500">Nenhuma ainda</span>
+            </div>
+          </div>
+
+          <div class="bg-dark-700 border border-dark-600 rounded-2xl p-4">
+            <h3 class="text-sm font-bold text-accent mb-2">📋 Elenco Atual</h3>
+            <ul id="squad-list" class="text-xs space-y-1 text-slate-300 max-h-48 overflow-y-auto"></ul>
+          </div>
+
+          <button id="btn-resign" class="w-full border border-dark-600 text-slate-400 text-sm py-2 rounded-lg hover:border-red-500 hover:text-red-400 transition">
+            Desistir
+          </button>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fixed inset-x-0 bottom-0 z-40 border-t border-dark-600 bg-dark-900/95 backdrop-blur">
+    <p class="mx-auto max-w-5xl px-4 py-2 text-center text-xs text-slate-400">
+      Fonte dos elencos: <a href="https://www.transfermarkt.com.br/campeonato-brasileiro-serie-a/startseite/wettbewerb/BRA1" target="_blank" rel="noopener noreferrer" class="font-semibold text-accent underline underline-offset-2">Transfermarkt Brasil</a>
+      <span aria-hidden="true">·</span> Brasileirão Série A 2026 <span aria-hidden="true">·</span> atualização indicada: setembro de 2026
+    </p>
+  </footer>
+
+  <!-- Modal Game Over / Win -->
+  <div id="modal" class="fixed inset-0 modal-bg z-50 hidden items-center justify-center p-4">
+    <div class="bg-dark-700 border border-dark-600 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+      <div id="modal-icon" class="text-5xl mb-3">🏆</div>
+      <h2 id="modal-title" class="text-2xl font-extrabold mb-2">Vitória!</h2>
+      <p id="modal-msg" class="text-slate-400 mb-4 text-sm"></p>
+      <div id="modal-stats" class="bg-dark-900 rounded-xl p-3 mb-6 text-sm text-left space-y-1"></div>
+      <button id="btn-replay" class="bg-gradient-to-r from-accent to-accent-dim text-black font-bold px-6 py-2.5 rounded-xl hover:scale-105 transition">
+        🔄 Jogar Novamente
+      </button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
