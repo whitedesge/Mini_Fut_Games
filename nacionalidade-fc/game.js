@@ -30,6 +30,7 @@ const State = {
   currentClub: null,
   currentYear: null,
   selectedPlayer: null,
+  hardMode: false,
   phase: "menu",       // menu | choosing | placing | ended
   rounds: 0
 };
@@ -54,6 +55,8 @@ function toast(msg) {
 
 /* ===== INIT ===== */
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btn-mode-normal").onclick = () => setDifficulty(false);
+  document.getElementById("btn-mode-hard").onclick = () => setDifficulty(true);
   document.getElementById("btn-start").onclick = startGame;
   document.getElementById("btn-confirm-player").onclick = confirmPlayer;
   document.getElementById("btn-resign").onclick = () => endGame(false, "Você desistiu.");
@@ -65,6 +68,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+function setDifficulty(hardMode) {
+  State.hardMode = hardMode;
+  const normalButton = document.getElementById("btn-mode-normal");
+  const hardButton = document.getElementById("btn-mode-hard");
+  normalButton.setAttribute("aria-pressed", String(!hardMode));
+  hardButton.setAttribute("aria-pressed", String(hardMode));
+  normalButton.classList.toggle("bg-accent", !hardMode);
+  normalButton.classList.toggle("text-black", !hardMode);
+  normalButton.classList.toggle("text-slate-300", hardMode);
+  hardButton.classList.toggle("bg-accent", hardMode);
+  hardButton.classList.toggle("text-black", hardMode);
+  hardButton.classList.toggle("text-slate-300", !hardMode);
+  document.getElementById("player-input").placeholder = hardMode
+    ? "Buscar por nome ou posição..."
+    : "Buscar por nome ou país...";
+  document.getElementById("player-hint").textContent = hardMode
+    ? "Selecione um jogador válido para o clube sorteado."
+    : "Jogadores com país já usado ficam bloqueados";
+}
+
 function startGame() {
   State.squad = {};
   State.usedNations = new Set();
@@ -72,7 +95,7 @@ function startGame() {
   State.phase = "choosing";
   State.rounds = 0;
   showScreen("game");
-  setBadge("Em jogo");
+  setBadge(State.hardMode ? "Em jogo · Difícil" : "Em jogo");
   renderPitch();
   updateNations();
   updateProgress();
@@ -142,7 +165,7 @@ function updateSuggestions() {
   const filtered = input
     ? valid.filter(p =>
       p.name.toLowerCase().includes(input) ||
-      p.nation.toLowerCase().includes(input) ||
+      (!State.hardMode && p.nation.toLowerCase().includes(input)) ||
       p.position.toLowerCase().includes(input)
     )
     : valid;
@@ -168,9 +191,6 @@ function updateSuggestions() {
 
     const identity = document.createElement("span");
     identity.className = "flex min-w-0 items-center gap-3";
-    const flag = document.createElement("span");
-    flag.className = "text-xl";
-    flag.textContent = player.flag;
     const details = document.createElement("span");
     details.className = "min-w-0";
     const name = document.createElement("span");
@@ -179,11 +199,18 @@ function updateSuggestions() {
     const detailsLine = document.createElement("span");
     detailsLine.className = "block text-xs text-slate-400";
     detailsLine.textContent = `${player.position} · ${player.age} anos`;
-    const nation = document.createElement("span");
-    nation.className = "block text-xs text-slate-500";
-    nation.textContent = player.nation;
-    details.append(name, detailsLine, nation);
-    identity.append(flag, details);
+    details.append(name, detailsLine);
+    if (!State.hardMode) {
+      const flag = document.createElement("span");
+      flag.className = "text-xl";
+      flag.textContent = player.flag;
+      const nation = document.createElement("span");
+      nation.className = "block text-xs text-slate-500";
+      nation.textContent = player.nation;
+      identity.append(flag);
+      details.appendChild(nation);
+    }
+    identity.append(details);
     item.appendChild(identity);
 
     if (playerUsed) {
@@ -191,7 +218,7 @@ function updateSuggestions() {
       status.className = "shrink-0 text-right text-[0.65rem] font-semibold text-slate-400";
       status.textContent = "Já escalado";
       item.appendChild(status);
-    } else if (nationUsed) {
+    } else if (nationUsed && !State.hardMode) {
       const status = document.createElement("span");
       status.className = "shrink-0 text-right text-[0.65rem] font-semibold text-red-300";
       status.textContent = "Nacionalidade já usada";
@@ -227,6 +254,10 @@ function confirmPlayer() {
 
   const usedNationalities = getPlayerNationalities(player).filter(nation => State.usedNations.has(nation));
   if (usedNationalities.length > 0) {
+    if (State.hardMode) {
+      toast("Este jogador não pode ser escalado.");
+      return;
+    }
     toast(`Nacionalidade já usada: ${usedNationalities.join(", ")}.`);
     return;
   }
@@ -236,7 +267,7 @@ function confirmPlayer() {
   document.getElementById("player-input").disabled = true;
   document.getElementById("btn-confirm-player").disabled = true;
   updateSuggestions();
-  toast(`${player.flag} ${player.name} confirmado! Clique em uma posição vazia.`);
+  toast(`${State.hardMode ? "" : `${player.flag} `}${player.name} confirmado! Clique em uma posição vazia.`);
   renderPitch(true); // highlight empty slots
 }
 
@@ -275,7 +306,7 @@ function renderPitch(selectable = false) {
         div.style.borderColor = "#22c55e";
         div.innerHTML = `
           <span class="font-bold text-white text-[0.65rem] leading-tight">${player.name.split(" ").pop()}</span>
-          <span class="text-[0.6rem]">${player.flag}</span>
+          ${State.hardMode ? "" : `<span class="text-[0.6rem]">${player.flag}</span>`}
         `;
       } else {
         div.innerHTML = `<span class="text-slate-400 text-[0.65rem]">${pos.label}</span>`;
@@ -299,6 +330,10 @@ function placePlayer(posId) {
   const player = State.selectedPlayer;
   const repeatedNationalities = getPlayerNationalities(player).filter(nation => State.usedNations.has(nation));
   if (repeatedNationalities.length > 0) {
+    if (State.hardMode) {
+      toast("Este jogador não pode ser escalado.");
+      return;
+    }
     toast(`Nacionalidade já usada: ${repeatedNationalities.join(", ")}.`);
     return;
   }
@@ -325,6 +360,7 @@ function placePlayer(posId) {
 /* ===== SIDE PANELS ===== */
 function updateNations() {
   const el = document.getElementById("nations-list");
+  document.getElementById("nations-panel").classList.toggle("hidden", State.hardMode);
   if (State.usedNations.size === 0) {
     el.innerHTML = '<span class="text-xs text-slate-500">Nenhuma ainda</span>';
     return;
@@ -358,7 +394,7 @@ function updateSquadList() {
     const p = State.squad[pos.id];
     const li = document.createElement("li");
     if (p) {
-      li.innerHTML = `<span class="text-slate-500">${pos.label}</span> ${p.flag} ${p.name}`;
+      li.innerHTML = `<span class="text-slate-500">${pos.label}</span> ${State.hardMode ? "" : `${p.flag} `}${p.name}`;
     } else {
       li.innerHTML = `<span class="text-slate-600">${pos.label}: —</span>`;
     }

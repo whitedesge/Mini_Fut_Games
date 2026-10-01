@@ -190,6 +190,13 @@
         <p>🚫 Regra: cada nacionalidade só pode aparecer uma vez</p>
         <p>🏆 Preencha as 11 posições para vencer</p>
       </div>
+      <fieldset class="mb-8">
+        <legend class="mb-2 text-sm font-semibold text-slate-300">Dificuldade</legend>
+        <div class="inline-flex rounded-lg border border-dark-600 bg-dark-700 p-1" role="group" aria-label="Dificuldade">
+          <button id="btn-mode-normal" type="button" aria-pressed="true" class="rounded-md bg-accent px-4 py-2 text-sm font-bold text-black">Normal</button>
+          <button id="btn-mode-hard" type="button" aria-pressed="false" class="rounded-md px-4 py-2 text-sm font-bold text-slate-300">Difícil</button>
+        </div>
+      </fieldset>
       <button id="btn-start" class="bg-gradient-to-r from-accent to-accent-dim text-black font-bold px-8 py-3 rounded-xl text-lg hover:scale-105 transition shadow-lg shadow-accent/30">
         ⚽ Iniciar Jogo
       </button>
@@ -229,7 +236,7 @@
               </button>
             </div>
             <div class="flex items-center justify-between gap-3 text-xs text-slate-400">
-              <span>Jogadores com país já usado ficam bloqueados</span>
+              <span id="player-hint">Jogadores com país já usado ficam bloqueados</span>
               <span id="player-count" class="shrink-0 font-semibold text-accent" aria-live="polite"></span>
             </div>
             <div id="player-list" class="max-h-64 overflow-y-auto divide-y divide-dark-600 rounded-lg border border-dark-600" role="listbox" aria-label="Jogadores disponíveis"></div>
@@ -256,7 +263,7 @@
             </div>
           </div>
 
-          <div class="bg-dark-700 border border-dark-600 rounded-2xl p-4">
+          <div id="nations-panel" class="bg-dark-700 border border-dark-600 rounded-2xl p-4">
             <h3 class="text-sm font-bold text-accent mb-3">🏳️ Nacionalidades Usadas</h3>
             <div id="nations-list" class="flex flex-wrap gap-2 min-h-[60px]">
               <span class="text-xs text-slate-500">Nenhuma ainda</span>

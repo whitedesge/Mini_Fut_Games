@@ -28,11 +28,22 @@ const GAMES_CATALOG = [
     id: "nacionalidade-fc",
     title: "Nacionalidade FC",
     description:
-      "Monte um 1-4-3-3 com jogadores do Brasileirão (2020–2027). A cada rodada um clube e um ano são sorteados — sem repetir nacionalidade.",
+      "Monte um 4-3-3 com jogadores do Brasileirão 2026 sem repetir nacionalidades. Escolha o modo normal, com pistas, ou o difícil, sem dicas de nacionalidade.",
     path: "nacionalidade-fc/",
     icon: "🌍",
     bannerColor: "linear-gradient(135deg, #1e3a5f, #0f172a)",
-    tags: ["Brasileirão", "Desafio", "4-3-3", "Single Player"],
+    tags: ["Brasileirão 2026", "Desafio", "4-3-3", "Normal / Difícil"],
+    status: "live"
+  },
+  {
+    id: "ultimate-squad-draft",
+    title: "Ultimate Squad Draft",
+    description:
+      "Monte o elenco de maior valor de mercado em uma disputa local ou online. Outros desafios de estatísticas chegam em breve.",
+    path: "ultimate-squad-draft/",
+    icon: "💎",
+    bannerColor: "linear-gradient(135deg, #0f766e, #1e3a5f)",
+    tags: ["Draft", "Local 2P", "Online 1v1"],
     status: "live"
   },
   {
@@ -57,4 +68,4 @@ const GAMES_CATALOG = [
     tags: ["Em breve"],
     status: "soon"
   }
-];
+]

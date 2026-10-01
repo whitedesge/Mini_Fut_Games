@@ -255,7 +255,7 @@ function handlePeerMsg(data) {
     updateAllUI();
   } else if (data.type === "bid") {
     State.currentBid = data.amount;
-    State.lastBidder = "opp";
+    State.lastBidder = State.isHost ? 1 : 0;
     State.noBidPasses = 0;
     State.history.unshift({ name: State.current?.name, amount: data.amount, by: "Oponente" });
     State.turn = State.isHost ? 0 : 1; // minha vez
@@ -263,18 +263,19 @@ function handlePeerMsg(data) {
     updateAllUI();
     toast(`Oponente ofertou R$ ${data.amount}`);
   } else if (data.type === "pass") {
-    if (State.lastBidder === 0 || State.lastBidder === "me") {
-      awardTo(State.isHost ? 0 : 1);
-    } else {
-      State.noBidPasses += 1;
-      if (State.noBidPasses >= 2) {
-        toast("Ninguém quis o jogador. Próximo...");
-        nextPlayer();
-        return;
-      }
-      State.turn = State.isHost ? 1 : 0;
-      updateAuctionUI();
+    if (State.lastBidder !== null && State.lastBidder !== (State.isHost ? 0 : 1)) {
+      awardTo(State.lastBidder, false);
+      return;
     }
+
+    State.noBidPasses += 1;
+    if (State.noBidPasses >= 2) {
+      toast("Ninguém quis o jogador. Próximo...");
+      nextPlayer();
+      return;
+    }
+    State.turn = State.isHost ? 1 : 0;
+    updateAuctionUI();
   } else if (data.type === "award") {
     const winner = State.isHost ? data.winner : 1 - data.winner;
     awardTo(winner, false);
@@ -458,21 +459,16 @@ function doBid(increment) {
 function doPass() {
   const actor = State.mode === "local2p" ? State.turn : 0;
 
-  if (State.mode === "online" && State.conn) {
-    State.conn.send({ type: "pass" });
-    if (State.lastBidder === "opp") return;
-  }
-
-  // Lógica de quem leva
   if (State.lastBidder !== null && State.lastBidder !== actor) {
-    // O outro tinha ofertado → ele leva
     awardTo(State.lastBidder);
     return;
   }
-  if (State.lastBidder === actor) {
-    // Eu ofertei e agora passo? Não faz sentido no fluxo normal; trata como desistência
-    // Se só eu ofertei e passo, o lance volta
+
+  if (State.mode === "online" && State.conn) {
+    State.conn.send({ type: "pass" });
   }
+
+  // Lógica de quem leva
 
   // Se ninguém ofertou ainda, ou ambos passam
   if (State.lastBidder === null) {

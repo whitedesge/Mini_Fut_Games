@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ultimate Squad Draft – Transfermarkt Edition</title>
+  <meta name="description" content="Monte um time de 5 jogadores com o maior valor de mercado. Draft estilo Transfermarkt: Brasileirão, Champions, Premier League, La Liga e Serie A." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <a class="logo" id="btn-home" href="#screen-menu" aria-label="Voltar à seleção de modos">
+      <span class="logo-icon">💎</span>
+      <h1>Ultimate Squad Draft</h1>
+    </a>
+    <div id="mode-badge" class="mode-badge">Menu</div>
+  </header>
+
+  <main>
+    <!-- MENU -->
+    <section id="screen-menu" class="screen active">
+      <div class="menu-wrap">
+        <h2 class="menu-title">Escolha o modo de jogo</h2>
+        <p class="menu-sub">Monte seu elenco no desafio disponível ou confira os próximos modos.</p>
+        <div class="cards mode-cards">
+          <button type="button" class="card mode-card" data-game-mode="highest-value">
+            <span class="mode-icon" aria-hidden="true">💎</span>
+            <h3>Contratação mais cara</h3>
+            <p>Escolha 5 jogadores e monte o elenco com o maior valor de mercado.</p>
+            <span class="tag">Disponível</span>
+          </button>
+          <button type="button" class="card mode-card" disabled>
+            <span class="mode-icon" aria-hidden="true">⚽</span>
+            <h3>Elenco com mais gols</h3>
+            <p>Monte um time com os maiores artilheiros.</p>
+            <span class="tag tag-inactive">Em desenvolvimento</span>
+          </button>
+          <button type="button" class="card mode-card" disabled>
+            <span class="mode-icon" aria-hidden="true">🟥</span>
+            <h3>Elenco com mais cartões vermelhos</h3>
+            <p>Reúna jogadores com mais expulsões na carreira.</p>
+            <span class="tag tag-inactive">Em desenvolvimento</span>
+          </button>
+          <button type="button" class="card mode-card" disabled>
+            <span class="mode-icon" aria-hidden="true">🔄</span>
+            <h3>Elenco com mais trocas de times</h3>
+            <p>Monte um time com jogadores que passaram por mais clubes.</p>
+            <span class="tag tag-inactive">Em desenvolvimento</span>
+          </button>
+          <button type="button" class="card mode-card" disabled>
+            <span class="mode-icon" aria-hidden="true">🎯</span>
+            <h3>Elenco com mais assistências</h3>
+            <p>Escolha os melhores garçons do futebol.</p>
+            <span class="tag tag-inactive">Em desenvolvimento</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATCH TYPE -->
+    <section id="screen-match" class="screen">
+      <div class="menu-wrap">
+        <h2 class="menu-title">Contratação mais cara</h2>
+        <p class="menu-sub">Escolha como quer jogar</p>
+        <div class="cards mode-cards">
+          <button type="button" class="card mode-card" data-match-mode="local">
+            <span class="mode-icon" aria-hidden="true">📱</span>
+            <h3>Local 2 Jogadores</h3>
+            <p>Dois jogadores no mesmo dispositivo. Alternem os turnos a cada rodada.</p>
+            <span class="tag">Passe e jogue</span>
+          </button>
+          <button type="button" class="card mode-card" data-match-mode="online">
+            <span class="mode-icon" aria-hidden="true">🌐</span>
+            <h3>Online 1v1</h3>
+            <p>Desafie alguém remotamente via PeerJS e compartilhe o ID da sala.</p>
+            <span class="tag">Peer-to-peer</span>
+          </button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-sec" id="btn-back-modes">← Modos de jogo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONLINE -->
+    <section id="screen-online" class="screen">
+      <div class="menu-wrap">
+        <h2 class="menu-title">Sala Online</h2>
+        <p class="menu-sub" id="online-status">Inicializando...</p>
+        <div class="lobby-box" id="create-box" style="display:none;">
+          <h3>Seu ID</h3>
+          <div class="peer-id" id="my-peer-id">—</div>
+          <p style="color:var(--muted);font-size:.85rem;">Envie este ID ao oponente</p>
+        </div>
+        <div class="lobby-box">
+          <h3>Entrar na sala</h3>
+          <input type="text" id="join-id" placeholder="Cole o ID do host" />
+          <button class="btn" id="btn-join">Conectar</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-sec" id="btn-back-menu">← Voltar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAGUE -->
+    <section id="screen-league" class="screen">
+      <div class="menu-wrap">
+        <h2 class="menu-title">Escolha a Liga</h2>
+        <p class="menu-sub">Os jogadores do draft virão desta competição</p>
+        <div class="cards">
+          <article class="card" data-league="brasileirao" role="button" tabindex="0">
+            <h3>🇧🇷 Brasileirão Série A</h3>
+            <p>Estrelas do futebol brasileiro. Valores em escala nacional.</p>
+            <span class="tag">Brasil</span>
+          </article>
+          <article class="card" data-league="champions" role="button" tabindex="0">
+            <h3>🇪🇺 UEFA Champions League</h3>
+            <p>Os maiores nomes da Europa. Valores de elite mundial.</p>
+            <span class="tag">Europa</span>
+          </article>
+          <article class="card" data-league="premier" role="button" tabindex="0">
+            <h3>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</h3>
+            <p>A liga mais rica do mundo. Haaland, Saka, Saliba e mais.</p>
+            <span class="tag">Inglaterra</span>
+          </article>
+          <article class="card" data-league="laliga" role="button" tabindex="0">
+            <h3>🇪🇸 La Liga</h3>
+            <p>Real Madrid, Barcelona e o talento espanhol/europeu.</p>
+            <span class="tag">Espanha</span>
+          </article>
+          <article class="card" data-league="seriea" role="button" tabindex="0">
+            <h3>🇮🇹 Serie A Italiana</h3>
+            <p>Inter, Milan, Juventus e Napoli. Defesa e talento.</p>
+            <span class="tag">Itália</span>
+          </article>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-sec" onclick="location.reload()">← Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen">
+      <div class="scoreboard">
+        <div class="score-panel">
+          <h4 id="name-p0">Você</h4>
+          <div class="score-total" id="total-p0">€ 0M</div>
+          <div class="squad-row" id="squad-p0"></div>
+        </div>
+        <div class="score-panel">
+          <h4 id="name-p1">Adversário</h4>
+          <div class="score-total" id="total-p1">€ 0M</div>
+          <div class="squad-row" id="squad-p1"></div>
+        </div>
+      </div>
+
+      <div class="round-bar">
+        <div class="round-label" id="round-label">Rodada 1/5</div>
+        <div class="turn-label yours" id="turn-label">Sua vez</div>
+      </div>
+
+      <div class="options-grid" id="options-grid"></div>
+    </section>
+
+    <!-- END -->
+    <section id="screen-end" class="screen">
+      <div class="end-wrap">
+        <h2 id="end-title">Fim do Draft</h2>
+        <p style="color:var(--muted)">Maior valor de mercado vence</p>
+        <div class="end-grid">
+          <div class="end-box" id="end-box-0">
+            <h3><span id="end-name-0">Você</span> — <span id="end-total-0">€ 0M</span></h3>
+            <ul id="end-squad-0"></ul>
+          </div>
+          <div class="end-box" id="end-box-1">
+            <h3><span id="end-name-1">Adversário</span> — <span id="end-total-1">€ 0M</span></h3>
+            <ul id="end-squad-1"></ul>
+          </div>
+        </div>
+        <button class="btn" id="btn-replay">🔄 Jogar Novamente</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/players.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
